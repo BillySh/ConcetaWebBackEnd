@@ -17,3 +17,9 @@ def list_entregas(db:Session):
 def find_by_id(db:Session, id:int):
     entrega=db.query(entregamodel.Entrega).filter(entregamodel.Entrega.id==id).first()
     return entrega
+
+def delete_entrega(db: Session, id:int):
+    entrega = db.query(entregamodel.Entrega).filter(entregamodel.Entrega.id == id).first()
+    db.delete(entrega)
+    db.commit()
+    return entrega

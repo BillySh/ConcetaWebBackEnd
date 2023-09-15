@@ -4,8 +4,12 @@ from repository import entregarepository
 from database import SessionLocal, engine
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, HTTPException, Body
+from pydantic import BaseModel
 
 app=FastAPI()
+class Data(BaseModel):
+    id: int
 
 origins = [
     "http://localhost:3000",
@@ -36,8 +40,24 @@ async def list_entregas(db: Session = Depends(get_db)):
 async def create_entregas(entrega:Entrega, db: Session = Depends(get_db)):
     entrega=entregarepository.create_entrega(db,entrega)
     return entrega
+##Eliminar una entrega
+
+@app.get("/entrega/find/{id}",response_model=Entrega)
+async def find_by_id(db:Session=Depends(get_db),id:int=0):
+    print(id)
+    user=entregarepository.find_by_id(db,id)
+    print(user)
+    return user
 
 
+
+@app.post("/entrega/delete", response_model=Entrega)
+async def delete_entrega(id : int = Body(..., embed=True), db: Session = Depends(get_db)):
+    success = entregarepository.delete_entrega(db, id)
+    if success:
+        return {"message": "Entrega deleted successfully"}
+    else: 
+        print(id)
 
 ##-------------------------------------------------------------
 
